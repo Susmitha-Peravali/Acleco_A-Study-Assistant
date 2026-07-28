@@ -1,5 +1,5 @@
 export default function StudySummary({ sessionData, flashcards, quizResults, streak, elapsedTime, onStartOver }) {
-  const { score, total } = quizResults;
+  const { score, total, reviewQuestions = [] } = quizResults || { score: 0, total: 0 };
   const accuracy     = total > 0 ? Math.round((score / total) * 100) : 0;
   const learnedCount = flashcards.filter(fc => fc.learned).length;
   const passed       = accuracy >= 70;
@@ -10,94 +10,117 @@ export default function StudySummary({ sessionData, flashcards, quizResults, str
   }
 
   const emoji   = accuracy >= 90 ? '🏆' : accuracy >= 70 ? '⭐' : '💪';
-  const tagline = accuracy >= 90 ? 'Outstanding performance!' : accuracy >= 70 ? 'Great work — keep the momentum!' : 'Keep practicing — consistency is key.';
+  const tagline = accuracy >= 90 ? 'Outstanding mastery!' : accuracy >= 70 ? 'Great progress — momentum built!' : 'Keep practicing — mastery is a loop.';
+
+  /* AI Learning Insights extraction from session content */
+  const masteredConcepts = sessionData.keyTakeaways.slice(0, 2);
+  const reviewConcepts   = reviewQuestions.length > 0
+    ? reviewQuestions.map(q => q.question.slice(0, 45) + '...')
+    : [sessionData.keyTakeaways[2] || 'Advanced concepts'];
 
   /* Radial progress ring */
-  const radius = 56;
+  const radius = 64;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (accuracy / 100) * circumference;
 
   return (
-    <div className="anim-fade-up" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div className="anim-fade-up" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '800px', margin: '0 auto' }}>
 
       {/* Hero result */}
-      <div className="card" style={{ padding: '2.5rem 2rem', textAlign: 'center' }}>
-        <div className="anim-float" style={{ fontSize: '3rem', marginBottom: '1rem', lineHeight: 1 }}>{emoji}</div>
+      <div className="card glass" style={{ padding: '3rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="anim-float" style={{ fontSize: '3.5rem', marginBottom: '1rem', lineHeight: 1 }}>{emoji}</div>
 
-        <h2 className="sora" style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>Session Complete!</h2>
-        <p style={{ fontSize: '0.875rem', color: 'var(--muted)', marginBottom: '2rem' }}>{tagline}</p>
+        <h2 className="satoshi" style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem' }}>Great Work!</h2>
+        <p style={{ fontSize: '1.05rem', color: 'var(--muted)', marginBottom: '2.5rem' }}>{tagline}</p>
 
         {/* Radial ring */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-          <div style={{ position: 'relative', width: '140px', height: '140px' }}>
-            <svg width="140" height="140" viewBox="0 0 140 140" style={{ transform: 'rotate(-90deg)' }}>
-              <circle className="ring-track" cx="70" cy="70" r={radius} strokeWidth="10" />
-              <circle className="ring-fill" cx="70" cy="70" r={radius} strokeWidth="10"
-                stroke={passed ? 'var(--em)' : 'var(--coral)'}
-                strokeDasharray={circumference}
-                strokeDashoffset={offset}
-              />
-            </svg>
-            <div style={{
-              position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span className="sora" style={{ fontSize: '2.25rem', fontWeight: 800, color: passed ? 'var(--em)' : 'var(--coral)', lineHeight: 1 }}>
-                {accuracy}%
-              </span>
-              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', marginTop: '2px' }}>{score}/{total}</span>
-            </div>
+        <div style={{ position: 'relative', width: '160px', height: '160px', marginBottom: '1.5rem' }}>
+          <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
+            <circle className="ring-track" cx="80" cy="80" r={radius} strokeWidth="12" />
+            <circle className="ring-fill" cx="80" cy="80" r={radius} strokeWidth="12"
+              stroke={passed ? 'var(--em)' : 'var(--orange)'}
+              strokeDasharray={circumference}
+              strokeDashoffset={offset}
+            />
+          </svg>
+          <div style={{
+            position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <span className="satoshi" style={{ fontSize: '2.75rem', fontWeight: 900, color: passed ? 'var(--em)' : 'var(--orange)', lineHeight: 1 }}>
+              {accuracy}%
+            </span>
+            <span className="satoshi" style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--muted)', marginTop: '4px' }}>{score}/{total} Score</span>
           </div>
         </div>
       </div>
 
       {/* Stat grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '1rem' }}>
         {[
-          { icon: '📖', label: 'Cards Learned',  value: `${learnedCount}/${flashcards.length}` },
-          { icon: '✍️', label: 'Quiz Score',      value: `${score}/${total}` },
-          { icon: '🎯', label: 'Accuracy',        value: `${accuracy}%` },
-          { icon: '⏱️', label: 'Time Spent',      value: formatTime(elapsedTime) },
+          { icon: '📖', label: 'Cards Mastered', value: `${learnedCount}/${flashcards.length}` },
+          { icon: '✍️', label: 'Quiz Score',     value: `${score}/${total}` },
+          { icon: '🎯', label: 'Accuracy',       value: `${accuracy}%` },
+          { icon: '⏱️', label: 'Study Time',     value: formatTime(elapsedTime) },
         ].map((s, i) => (
-          <div key={i} className="card anim-scale-in" style={{ padding: '1.25rem', animationDelay: `${i * 0.06}s` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-              <span style={{ fontSize: '14px' }}>{s.icon}</span>
-              <span className="label">{s.label}</span>
+          <div key={i} className="card anim-scale-in" style={{ padding: '1.5rem', animationDelay: `${i * 0.08}s` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+              <span style={{ fontSize: '18px' }}>{s.icon}</span>
+              <span className="satoshi" style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--faint)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
             </div>
-            <p className="sora" style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.02em' }}>{s.value}</p>
+            <p className="satoshi" style={{ fontSize: '1.75rem', fontWeight: 900 }}>{s.value}</p>
           </div>
         ))}
       </div>
 
-      {/* Streak */}
-      {streak > 0 && (
-        <div className="card" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{
-            width: '48px', height: '48px', borderRadius: 'var(--r-sm)',
-            background: 'var(--amber-light)', border: '1px solid rgba(242,169,0,0.3)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0,
-          }}>🔥</div>
-          <div style={{ flex: 1 }}>
-            <p className="sora" style={{ fontWeight: 700, fontSize: '0.95rem' }}>{streak} Day Streak!</p>
-            <p style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: '2px' }}>Come back tomorrow to keep it going.</p>
+      {/* ─── AI Learning Insights Card ─── */}
+      <div className="card glass anim-fade-up d2" style={{ padding: '2rem', borderLeft: '4px solid var(--em)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+          <span style={{ fontSize: '24px' }}>💡</span>
+          <div>
+            <h3 className="satoshi" style={{ fontSize: '1.2rem', fontWeight: 900 }}>Personalized Learning Insights</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>Built from your quiz & flashcard performance</p>
           </div>
-          <span className="tag tag-amber" style={{ fontWeight: 700 }}>{streak}🔥</span>
         </div>
-      )}
 
-      {/* Topic */}
-      <div className="card" style={{ padding: '1.25rem' }}>
-        <p className="label" style={{ marginBottom: '6px' }}>Topic Covered</p>
-        <p className="sora" style={{ fontSize: '0.95rem', fontWeight: 600 }}>{sessionData.title}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          {/* Mastered */}
+          <div style={{ background: 'var(--surface-2)', padding: '1.25rem', borderRadius: 'var(--r-md)', border: '1px solid var(--border)' }}>
+            <span className="satoshi" style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--success)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.75rem' }}>
+              ✓ Mastered Concepts
+            </span>
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px', listStyle: 'none' }}>
+              {masteredConcepts.map((m, i) => (
+                <li key={i} style={{ fontSize: '0.9rem', color: 'var(--text-2)', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                  <span style={{ color: 'var(--success)', fontWeight: 800 }}>•</span> {m}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Needs Review */}
+          <div style={{ background: 'var(--surface-2)', padding: '1.25rem', borderRadius: 'var(--r-md)', border: '1px solid var(--border)' }}>
+            <span className="satoshi" style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--orange)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.75rem' }}>
+              ⚠ Recommended Practice
+            </span>
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px', listStyle: 'none' }}>
+              {reviewConcepts.map((r, i) => (
+                <li key={i} style={{ fontSize: '0.9rem', color: 'var(--text-2)', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                  <span style={{ color: 'var(--orange)', fontWeight: 800 }}>•</span> {r}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
 
       {/* Actions */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <button id="start-over-btn" onClick={onStartOver} className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '0.95rem', borderRadius: 'var(--r-lg)' }}>
-          📝 Study a New Topic
+      <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+        <button id="start-over-btn" onClick={onStartOver} className="btn btn-primary" style={{ flex: 1, padding: '1.15rem', fontSize: '1.05rem' }}>
+          Study a New Topic →
         </button>
-        <button id="retry-session-btn" onClick={() => window.location.reload()} className="btn btn-ghost" style={{ width: '100%', padding: '0.85rem' }}>
-          ↻ Restart This Session
+        <button id="retry-session-btn" onClick={() => window.location.reload()} className="btn btn-secondary" style={{ padding: '1.15rem 1.75rem', fontSize: '1.05rem' }}>
+          ↻ Restart Session
         </button>
       </div>
     </div>

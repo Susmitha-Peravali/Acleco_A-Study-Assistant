@@ -150,4 +150,19 @@ Acleco/
 5. The frontend's state machine transitions from `LOADING` -> `MISSION`, and the active study session begins.
 
 ---
+
+## 🤖 AI Usage Note
+* **Development:** I used GitHub Copilot for code completion and boilerplate generation. I also used Claude 3.5 Sonnet to brainstorm the `useStudySession` state machine architecture and refine the glassmorphic CSS tokens.
+* **Application Features:** The core application utilizes the Google Gemini API to dynamically process user notes into structured educational content.
+
+## ⚠️ Known Limitations
+- **No Database Persistence:** Study sessions and editable flashcards are currently held in React state. Refreshing the page will clear your active session (though your daily streak is saved in `localStorage`).
+- **Context Limit:** Extremely large textbook chapters pasted at once may exceed the Gemini prompt token limit or take a significant amount of time to generate.
+- **Image Generation:** The app currently focuses on text-based notes and cannot parse images or diagrams from the input.
+
+## ⏱️ Time Spent
+- **Total Time:** ~7.5 hours
+- *Breakdown:* 2 hours on design system & UI scaffolding, 3 hours on AI API integration and JSON fault-tolerance, 2.5 hours on state management and UI polish.
+
+---
 *Designed & built for active, mindful learning.*

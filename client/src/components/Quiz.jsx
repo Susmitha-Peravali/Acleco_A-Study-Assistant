@@ -31,46 +31,46 @@ export default function Quiz({ questions, onComplete, isReview = false }) {
   function optClass(opt) {
     if (!submitted) return opt === selectedAnswer ? 'opt selected' : 'opt';
     if (opt === current.correctAnswer) return 'opt correct';
-    if (opt === selectedAnswer && opt !== current.correctAnswer) return 'opt wrong';
+    if (opt === selectedAnswer && opt !== current.correctAnswer) return 'opt wrong anim-shake';
     return 'opt';
   }
 
   return (
-    <div className="anim-fade-up" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div className="anim-fade-up" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h2 className="sora" style={{ fontSize: '1.15rem', fontWeight: 700 }}>
-            {isReview ? 'Review Incorrect' : 'Quiz'}
+          <h2 className="satoshi" style={{ fontSize: '1.35rem', fontWeight: 900 }}>
+            {isReview ? 'Targeted Review' : 'Knowledge Check'}
           </h2>
-          <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '2px' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: '2px' }}>
             Question {currentIndex + 1} of {questions.length}
           </p>
         </div>
-        <div className="tag tag-em">
-          {score} correct
+        <div className="tag tag-em" style={{ fontSize: '0.85rem' }}>
+          {score} Correct
         </div>
       </div>
 
-      <div className="card" style={{ padding: '1rem 1.25rem' }}>
-        <ProgressBar percent={progress} />
+      <div className="card" style={{ padding: '1.25rem 1.5rem' }}>
+        <ProgressBar percent={progress} label="Quiz Completion" />
       </div>
 
       {/* Question card */}
-      <div className="card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        <p className="sora" style={{ fontSize: '1rem', fontWeight: 600, lineHeight: 1.6 }}>
+      <div className="card glass" style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+        <h3 className="satoshi" style={{ fontSize: '1.25rem', fontWeight: 800, lineHeight: 1.5 }}>
           {current.question}
-        </p>
+        </h3>
 
         {/* Options */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {current.options.map((opt, i) => (
             <button key={i} id={`option-${i}`} onClick={() => handleSelect(opt)} disabled={submitted} className={optClass(opt)}>
               <span style={{
-                width: '28px', height: '28px', borderRadius: '8px', flexShrink: 0,
+                width: '32px', height: '32px', borderRadius: 'var(--r-sm)', flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '0.72rem', fontWeight: 700, fontFamily: "'Sora', sans-serif",
+                fontSize: '0.85rem', fontWeight: 800, fontFamily: "'Satoshi', sans-serif",
                 background: submitted && opt === current.correctAnswer ? 'var(--success-bg)'
                   : submitted && opt === selectedAnswer && opt !== current.correctAnswer ? 'var(--error-bg)'
                   : 'var(--surface-2)',
@@ -78,29 +78,29 @@ export default function Quiz({ questions, onComplete, isReview = false }) {
                   : submitted && opt === selectedAnswer ? 'var(--error)'
                   : 'var(--muted)',
               }}>{String.fromCharCode(65 + i)}</span>
-              <span style={{ flex: 1, textAlign: 'left' }}>{opt}</span>
-              {submitted && opt === current.correctAnswer && <span style={{ color: 'var(--success)', fontWeight: 700 }}>✓</span>}
-              {submitted && opt === selectedAnswer && opt !== current.correctAnswer && <span style={{ color: 'var(--error)', fontWeight: 700 }}>✗</span>}
+              <span style={{ flex: 1, textAlign: 'left', lineHeight: 1.4 }}>{opt}</span>
+              {submitted && opt === current.correctAnswer && <span style={{ color: 'var(--success)', fontWeight: 800, fontSize: '1.1rem' }}>✓</span>}
+              {submitted && opt === selectedAnswer && opt !== current.correctAnswer && <span style={{ color: 'var(--error)', fontWeight: 800, fontSize: '1.1rem' }}>✗</span>}
             </button>
           ))}
         </div>
 
         {/* Feedback + Actions */}
         {!submitted ? (
-          <button id="submit-answer-btn" onClick={handleSubmit} disabled={!selectedAnswer} className="btn btn-primary" style={{ width: '100%', padding: '0.9rem', borderRadius: 'var(--r-md)' }}>
+          <button id="submit-answer-btn" onClick={handleSubmit} disabled={!selectedAnswer} className="btn btn-primary" style={{ width: '100%', padding: '1.15rem', borderRadius: 'var(--r-lg)', fontSize: '1.05rem' }}>
             Submit Answer
           </button>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{
-              padding: '12px 16px', borderRadius: 'var(--r-sm)', fontSize: '0.875rem', fontWeight: 600, textAlign: 'center',
+              padding: '1rem 1.25rem', borderRadius: 'var(--r-md)', fontSize: '0.95rem', fontWeight: 700, textAlign: 'center',
               background: selectedAnswer === current.correctAnswer ? 'var(--success-bg)' : 'var(--error-bg)',
-              color: selectedAnswer === current.correctAnswer ? '#1B5E38' : '#8B1C1C',
-              border: `1px solid ${selectedAnswer === current.correctAnswer ? 'rgba(58,166,107,0.25)' : 'rgba(214,69,69,0.2)'}`,
+              color: selectedAnswer === current.correctAnswer ? 'var(--success)' : 'var(--error)',
+              border: `1px solid ${selectedAnswer === current.correctAnswer ? 'rgba(39,174,96,0.25)' : 'rgba(231,76,60,0.2)'}`,
             }}>
-              {selectedAnswer === current.correctAnswer ? '✓ Correct! Well done.' : `✗ Correct answer: ${current.correctAnswer}`}
+              {selectedAnswer === current.correctAnswer ? '✓ Correct! You\'ve mastered this concept.' : `✗ Correct answer: ${current.correctAnswer}`}
             </div>
-            <button id="next-question-btn" onClick={handleNext} className="btn btn-primary" style={{ width: '100%', padding: '0.9rem', borderRadius: 'var(--r-md)' }}>
+            <button id="next-question-btn" onClick={handleNext} className="btn btn-primary" style={{ width: '100%', padding: '1.15rem', borderRadius: 'var(--r-lg)', fontSize: '1.05rem' }}>
               {isLast ? 'See Results' : 'Next Question →'}
             </button>
           </div>
