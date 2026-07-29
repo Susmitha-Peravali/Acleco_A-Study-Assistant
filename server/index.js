@@ -8,7 +8,12 @@ const app  = express();
 const PORT = process.env.PORT || 3001;
 
 // ── Middleware ──────────────────────────────────────────────
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
+const defaultOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+const allowedOrigins = process.env.CLIENT_URL
+  ? [...defaultOrigins, ...process.env.CLIENT_URL.split(',').map((s) => s.trim())]
+  : defaultOrigins;
+
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 // ── Routes ──────────────────────────────────────────────────
@@ -22,4 +27,3 @@ app.listen(PORT, () => {
   console.log(`\n🟢  Study Assistant server running on http://localhost:${PORT}`);
   console.log(`    Model: ${process.env.MODEL_NAME || 'gemini-2.5-flash'}\n`);
 });
-// Force restart
