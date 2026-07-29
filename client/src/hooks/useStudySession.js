@@ -64,9 +64,13 @@ export function useStudySession() {
 
   // Ref to abort in-flight requests
   const abortControllerRef = useRef(null);
+  // Ref to last submitted notes, so a retry doesn't need the user to retype
+  const lastNotesRef = useRef('');
 
   // ── Generate session ───────────────────────────────────────────────────────
   const generateSession = useCallback(async (notes) => {
+    lastNotesRef.current = notes;
+
     // Cancel any previous in-flight request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -102,6 +106,11 @@ export function useStudySession() {
       setSessionState(SESSION_STATES.IDLE);
     }
   }, []);
+
+  // ── Retry ──────────────────────────────────────────────────────────────────
+  const retryGeneration = useCallback(() => {
+    if (lastNotesRef.current) generateSession(lastNotesRef.current);
+  }, [generateSession]);
 
   // ── Navigation ─────────────────────────────────────────────────────────────
   const startFlashcards = useCallback(() => setSessionState(SESSION_STATES.FLASHCARD), []);
@@ -156,6 +165,7 @@ export function useStudySession() {
     elapsedTime,
     // Actions
     generateSession,
+    retryGeneration,
     startFlashcards,
     startQuiz,
     startReview,
