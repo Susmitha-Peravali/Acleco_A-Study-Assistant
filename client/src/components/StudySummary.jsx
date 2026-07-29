@@ -1,5 +1,6 @@
 export default function StudySummary({ sessionData, flashcards, quizResults, streak, elapsedTime, onStartOver }) {
-  const { score, total, reviewQuestions = [] } = quizResults || { score: 0, total: 0 };
+  const { score, total, reviewQuestions } = quizResults || { score: 0, total: 0 };
+  const safeReviewQuestions = reviewQuestions ?? [];
   const accuracy     = total > 0 ? Math.round((score / total) * 100) : 0;
   const learnedCount = flashcards.filter(fc => fc.learned).length;
   const passed       = accuracy >= 70;
@@ -14,8 +15,8 @@ export default function StudySummary({ sessionData, flashcards, quizResults, str
 
   /* AI Learning Insights extraction from session content */
   const masteredConcepts = sessionData.keyTakeaways.slice(0, 2);
-  const reviewConcepts   = reviewQuestions.length > 0
-    ? reviewQuestions.map(q => q.question.slice(0, 45) + '...')
+  const reviewConcepts   = safeReviewQuestions.length > 0
+    ? safeReviewQuestions.map(q => q.question.slice(0, 45) + '...')
     : [sessionData.keyTakeaways[2] || 'Advanced concepts'];
 
   /* Radial progress ring */
