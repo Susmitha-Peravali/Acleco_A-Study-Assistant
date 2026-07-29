@@ -23,7 +23,7 @@ export default function Home() {
   const {
     sessionState, sessionData, flashcards, error, quizResults,
     streak, elapsedTime,
-    generateSession, startFlashcards, startQuiz, startReview,
+    generateSession, retryGeneration, startFlashcards, startQuiz, startReview,
     completeQuiz, updateFlashcard, toggleLearned, reset,
   } = useStudySession();
 
@@ -83,7 +83,7 @@ export default function Home() {
             
             {sessionState === SESSION_STATES.IDLE && (
               <div style={{ width: '100%' }}>
-                {error && <div style={{ marginBottom: '2rem' }}><ErrorState message={error.message} code={error.code} onRetry={() => {}} /></div>}
+                {error && <div style={{ marginBottom: '2rem' }}><ErrorState message={error.message} code={error.code} onRetry={retryGeneration} /></div>}
                 <NotesInput onGenerate={generateSession} isLoading={false} />
               </div>
             )}
