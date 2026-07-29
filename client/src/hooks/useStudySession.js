@@ -125,7 +125,7 @@ export function useStudySession() {
   const completeQuiz = useCallback((score, total, wrongQuestions) => {
     const elapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
     setElapsedTime(elapsed);
-    setQuizResults({ score, total, wrongQuestions, reviewQuestions: null });
+    setQuizResults({ score, total, wrongQuestions, reviewQuestions: [] });
     setSessionState(SESSION_STATES.SUMMARY);
     const newStreak = incrementStreak();
     setStreak(newStreak);
